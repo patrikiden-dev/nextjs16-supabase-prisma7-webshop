@@ -21,21 +21,23 @@ export default function Pagination({
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    if (totalPages <= 1) {
-        return null;
-    }
-
     const safeCurrentPage = Math.min(
         Math.max(currentPage, 1),
-        totalPages
+        Math.max(totalPages, 1)
     );
 
     function goToPage(page: number) {
-        if (page < 1 || page > totalPages || page === safeCurrentPage) {
+        if (
+            page < 1 ||
+            page > totalPages ||
+            page === safeCurrentPage
+        ) {
             return;
         }
 
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(
+            searchParams.toString()
+        );
 
         if (page === 1) {
             params.delete("page");
@@ -53,11 +55,6 @@ export default function Pagination({
     }
 
     function getPageItems(): PageItem[] {
-        /*
-         * 10 or fewer pages:
-         *
-         * 1 2 3 4 5 6 7 8 9 10
-         */
         if (totalPages <= 10) {
             return Array.from(
                 { length: totalPages },
@@ -65,11 +62,6 @@ export default function Pagination({
             );
         }
 
-        /*
-         * Beginning:
-         *
-         * 1 2 3 4 5 6 7 8 ... 50
-         */
         if (safeCurrentPage <= 6) {
             return [
                 1,
@@ -85,11 +77,6 @@ export default function Pagination({
             ];
         }
 
-        /*
-         * End:
-         *
-         * 1 ... 43 44 45 46 47 48 49 50
-         */
         if (safeCurrentPage >= totalPages - 5) {
             return [
                 1,
@@ -105,11 +92,6 @@ export default function Pagination({
             ];
         }
 
-        /*
-         * Middle:
-         *
-         * 1 ... 7 8 9 10 11 12 13 14 ... 50
-         */
         return [
             1,
             "ellipsis",
@@ -125,6 +107,10 @@ export default function Pagination({
         ];
     }
 
+    if (totalPages <= 1) {
+        return null;
+    }
+
     const pageItems = getPageItems();
 
     return (
@@ -137,12 +123,16 @@ export default function Pagination({
                 {/* Previous */}
                 <button
                     type="button"
-                    onClick={() => goToPage(safeCurrentPage - 1)}
+                    onClick={() =>
+                        goToPage(safeCurrentPage - 1)
+                    }
                     disabled={safeCurrentPage === 1}
                     aria-label="Go to previous page"
                     className="
-            border border-border
-            px-4 py-2
+            border
+            border-border
+            px-4
+            py-2
             text-sm
             transition-colors
             hover:bg-surface
@@ -160,7 +150,6 @@ export default function Pagination({
                             return (
                                 <span
                                     key={`ellipsis-${index}`}
-                                    aria-hidden="true"
                                     className="
                     flex
                     h-10
@@ -170,13 +159,15 @@ export default function Pagination({
                     px-2
                     text-sm
                   "
+                                    aria-hidden="true"
                                 >
                   ...
                 </span>
                             );
                         }
 
-                        const isActive = item === safeCurrentPage;
+                        const active =
+                            item === safeCurrentPage;
 
                         return (
                             <button
@@ -184,7 +175,7 @@ export default function Pagination({
                                 type="button"
                                 onClick={() => goToPage(item)}
                                 aria-current={
-                                    isActive ? "page" : undefined
+                                    active ? "page" : undefined
                                 }
                                 aria-label={`Go to page ${item}`}
                                 className={`
@@ -199,7 +190,7 @@ export default function Pagination({
                   text-sm
                   transition-colors
                   ${
-                                    isActive
+                                    active
                                         ? "font-semibold"
                                         : "hover:bg-surface"
                                 }
@@ -214,12 +205,18 @@ export default function Pagination({
                 {/* Next */}
                 <button
                     type="button"
-                    onClick={() => goToPage(safeCurrentPage + 1)}
-                    disabled={safeCurrentPage === totalPages}
+                    onClick={() =>
+                        goToPage(safeCurrentPage + 1)
+                    }
+                    disabled={
+                        safeCurrentPage === totalPages
+                    }
                     aria-label="Go to next page"
                     className="
-            border border-border
-            px-4 py-2
+            border
+            border-border
+            px-4
+            py-2
             text-sm
             transition-colors
             hover:bg-surface

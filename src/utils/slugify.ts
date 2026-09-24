@@ -1,14 +1,41 @@
-// lib/slugify.ts
+import { prisma } from "@/lib/prisma";
 
-export function slugify(title: string): string {
-    return title
-        .normalize('NFKD')                  // split accented chars into base + diacritic
-        .replace(/[\u0300-\u036f]/g, '')    // strip diacritics
+function createSlug(value: string): string {
+    return value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9\s-]/g, '')       // remove non-alphanumeric chars
-        .replace(/[\s_-]+/g, '-')           // collapse whitespace/underscores/dashes into one dash
-        .replace(/^-+|-+$/g, '');           // trim leading/trailing dashes
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
+// Checks if slug is unique. If not, it adds a dash and a digit like: lego-2
+export async function createUniqueSlug(
+    title: string
+): Promise<string> {
+    const baseSlug = createSlug(title);
+
+    let slug = baseSlug;
+    let counter = 2;
+
+    while (
+        await prisma.product.findUnique({
+            where: {
+                slug,
+            },
+            select: {
+                id: true,
+            },
+        })
+        ) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+
+    return slug;
 }
 /*
 USAGE Examples

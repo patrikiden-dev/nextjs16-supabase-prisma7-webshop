@@ -3,6 +3,7 @@
 import { getProducts, ProductSort } from "@/lib/products";
 import ProductFilters from "@/components/product-filters";
 import Pagination from "@/components/pagination";
+import Link from "next/link";
 
 type ProductsPageProps = {
     searchParams: Promise<{
@@ -50,7 +51,28 @@ export default async function ProductsPage({
     });
 
     return (
-        <main>
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-semibold">
+                        Products
+                    </h1>
+
+                    <p className="mt-2 text-sm text-gray-600">
+                        {result.total} products
+                    </p>
+                </div>
+
+                <Link
+                    href="/products/new"
+                    className="border border-blue bg-blue px-5 py-3 text-sm text-blue-700"
+                >
+                    Add product
+                </Link>
+            </div>
+
+
             <ProductFilters />
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
