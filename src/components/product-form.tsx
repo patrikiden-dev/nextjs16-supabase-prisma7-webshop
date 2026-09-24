@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CATEGORIES } from "@/lib/constants/categories";
 
 export default function ProductForm() {
     const router = useRouter();
@@ -97,10 +98,18 @@ export default function ProductForm() {
     }
 
     return (
+
+
+
+
         <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-6"
         >
+
+            <p>stock: {stock}</p>
+            <p>price: {price}</p>
+
             {/* Title */}
 
             <div>
@@ -173,26 +182,35 @@ export default function ProductForm() {
 
             {/* Category */}
 
-            <div>
+            <div className="flex flex-col gap-2">
                 <label
                     htmlFor="category"
-                    className="block mb-2"
+                    className="text-sm font-medium"
                 >
                     Category
                 </label>
 
-                <input
+                <select
                     id="category"
-                    type="text"
+                    name="category"
                     value={category}
-                    onChange={(event) =>
-                        setCategory(
-                            event.target.value
-                        )
-                    }
+                    onChange={(event) => setCategory(event.target.value)}
                     required
-                    className="w-full border p-3"
-                />
+                    className="border border-border bg-white px-3 py-2"
+                >
+                    <option value="">
+                        Select a category
+                    </option>
+
+                    {CATEGORIES.map((item) => (
+                        <option
+                            key={item.value}
+                            value={item.value}
+                        >
+                            {item.label}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {/* Stock */}
@@ -241,7 +259,7 @@ export default function ProductForm() {
 
             {/* Product image */}
 
-            <div>
+            <div className="bg-blue-100">
                 <label
                     htmlFor="image"
                     className="block mb-2"
@@ -252,7 +270,7 @@ export default function ProductForm() {
                 <input
                     id="image"
                     type="file"
-                    accept="image/webp"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={(event) =>
                         setImage(
                             event.target.files?.[0] ??
@@ -262,7 +280,7 @@ export default function ProductForm() {
                     required
                 />
 
-                <p className="mt-1 text-sm">
+                <p className="mt-1 text-smtext-blue-700 ">
                     WebP image. Automatically resized
                     and cropped to 1000 × 1000px.
                 </p>
@@ -270,10 +288,10 @@ export default function ProductForm() {
 
             {/* Thumbnail */}
 
-            <div>
+            <div className="bg-blue-100">
                 <label
                     htmlFor="thumbnail"
-                    className="block mb-2"
+                    className="block mb-2 text-blue-700 "
                 >
                     Thumbnail
                 </label>

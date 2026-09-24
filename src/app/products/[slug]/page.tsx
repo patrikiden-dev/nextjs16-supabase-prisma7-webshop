@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 type ProductPageProps = {
     params: Promise<{
@@ -39,6 +40,25 @@ export default async function ProductPage({
             <p>SKU: {product.sku}</p>
 
             <p>Stock: {product.stock}</p>
+
+            <p>
+                Image:
+                <Image
+                    src={`/images/${product.slug}.webp`}
+                    width={500}
+                    height={500}
+                    alt={`${product.title}`}
+                    loading="eager"
+                />
+            </p>
+            <p>
+                <Image
+                    src={`/thumbnails/${product.slug}.webp`}
+                    width={50}
+                    height={50}
+                    alt={`${product.title}`}
+                />
+            </p>
         </main>
     );
 }

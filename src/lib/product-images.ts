@@ -21,6 +21,8 @@ type ProcessedImage = {
     url: string;
 };
 
+const allowedFormats = ["jpeg", "png", "webp"];
+
 const IMAGE_CONFIG = {
     image: {
         width: 1000,
@@ -76,9 +78,9 @@ export async function saveProductImage({
     // Validate actual format
     // -----------------------------------------
 
-    if (metadata.format !== "webp") {
+    if (!metadata.format || !allowedFormats.includes(metadata.format)) {
         throw new Error(
-            "The uploaded image must actually be a WebP image."
+            "The uploaded image must be a JPG, PNG, or WebP image."
         );
     }
 
