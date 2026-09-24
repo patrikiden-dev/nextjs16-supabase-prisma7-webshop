@@ -1,26 +1,45 @@
 {
-  "name": "nextjs16-supabase_2026-09-22",
+  "name": "p7postgres",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "seed": "tsx prisma/seed.ts",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "next": "16.3.6",
+    "@node-rs/argon2": "^2.2.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "argon2": "^0.45.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "lucide-react": "^1.39.0",
+    "next": "16.3.4",
+    "pg": "^8.23.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.6",
+    "eslint-config-next": "16.3.4",
+    "prisma": "^7.10.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }
