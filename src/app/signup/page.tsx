@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+import { authClient } from "@/lib/auth-client";
 import { signUpSchema } from "@/lib/validation/user";
 
 export default function SignupPage() {
@@ -14,9 +17,7 @@ export default function SignupPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>
-    ) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setError("");
@@ -30,7 +31,7 @@ export default function SignupPage() {
         if (!validation.success) {
             setError(
                 validation.error.issues[0]?.message ??
-                "Invalid form data."
+                "Invalid signup information."
             );
             return;
         }
@@ -38,88 +39,97 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-            const response = await fetch("/api/auth/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(validation.data),
+            const result = await authClient.signUp.email({
+                name: validation.data.name,
+                email: validation.data.email,
+                password: validation.data.password,
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error ?? "Unable to create account."
+            if (result.error) {
+                setError(
+                    result.error.message ??
+                    "Unable to create your account."
                 );
+                return;
             }
 
-            router.push("/login");
-        } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : "Something went wrong."
-            );
+            router.push("/dashboard");
+            router.refresh();
+        } catch {
+            setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center">
-            <form
-                onSubmit={handleSubmit}
-                className="flex w-full max-w-md flex-col gap-4 border p-6"
-            >
-                <h1 className="text-2xl font-bold">
+        <main className="flex min-h-screen items-center justify-center p-6">
+            <div className="w-full max-w-md">
+                <h1 className="mb-6 text-3xl font-bold">
                     Create account
                 </h1>
 
-                <input
-                    type="text"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(event) =>
-                        setName(event.target.value)
-                    }
-                    className="border px-3 py-2"
-                />
-
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(event) =>
-                        setEmail(event.target.value)
-                    }
-                    className="border px-3 py-2"
-                />
-
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(event) =>
-                        setPassword(event.target.value)
-                    }
-                    className="border px-3 py-2"
-                />
-
-                {error && (
-                    <p className="text-sm text-red-600">
-                        {error}
-                    </p>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-black px-4 py-2 text-white disabled:opacity-50"
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-4"
                 >
-                    {loading ? "Creating account..." : "Sign up"}
-                </button>
-            </form>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        autoComplete="name"
+                        required
+                        className="border p-3"
+                    />
+
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        autoComplete="email"
+                        required
+                        className="border p-3"
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(event) =>
+                            setPassword(event.target.value)
+                        }
+                        autoComplete="new-password"
+                        required
+                        className="border p-3"
+                    />
+
+                    {error && (
+                        <p className="text-sm text-red-600">
+                            {error}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="bg-black p-3 text-white disabled:opacity-50"
+                    >
+                        {loading ? "Creating account..." : "Sign up"}
+                    </button>
+                </form>
+
+                <p className="mt-6 text-sm">
+                    Already have an account?{" "}
+                    <Link
+                        href="/login"
+                        className="underline"
+                    >
+                        Login
+                    </Link>
+                </p>
+            </div>
         </main>
     );
 }

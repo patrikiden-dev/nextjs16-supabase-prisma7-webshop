@@ -11,16 +11,23 @@ export default function HomePage() {
           <div className="flex gap-4">
             <Link
                 href="/login"
-                className="border border-black px-6 py-3 hover:bg-black hover:text-white"
+                className="bg-black px-4 py-2 text-white"
             >
               Login
             </Link>
 
             <Link
                 href="/signup"
-                className="border border-black px-6 py-3 hover:bg-black hover:text-white"
+                className="border px-4 py-2"
             >
               Sign up
+            </Link>
+
+            <Link
+                href="/dashboard"
+                className="border px-4 py-2"
+            >
+              Dashboard
             </Link>
           </div>
         </div>
