@@ -1,13 +1,26 @@
+// src/app/products/page.tsx
+
+import { getProducts, ProductSort } from "@/lib/products";
 import ProductFilters from "@/components/product-filters";
-import { getProducts } from "@/lib/products";
+import Pagination from "@/components/pagination";
 
 type ProductsPageProps = {
     searchParams: Promise<{
         search?: string;
         category?: string;
         sort?: string;
+        page?: string;
     }>;
 };
+
+const validSorts: ProductSort[] = [
+    "newest",
+    "oldest",
+    "price-asc",
+    "price-desc",
+    "title-asc",
+    "title-desc",
+];
 
 export default async function ProductsPage({
                                                searchParams,
@@ -17,81 +30,45 @@ export default async function ProductsPage({
     const search = params.search ?? "";
     const category = params.category ?? "";
 
-    const validSorts = [
-        "newest",
-        "oldest",
-        "price-asc",
-        "price-desc",
-        "title-asc",
-        "title-desc",
-    ] as const;
-
-    const sort = validSorts.includes(
-        params.sort as (typeof validSorts)[number]
+    const sort: ProductSort = validSorts.includes(
+        params.sort as ProductSort
     )
-        ? (params.sort as (typeof validSorts)[number])
+        ? (params.sort as ProductSort)
         : "newest";
 
-    const products = await getProducts({
+    const page = Math.max(
+        1,
+        Number.parseInt(params.page ?? "1", 10) || 1
+    );
+
+    const result = await getProducts({
         search,
         category,
         sort,
+        page,
+        pageSize: 12,
     });
 
     return (
-        <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
-
-            {/* Filters */}
-            <aside>
+        <main>
             <ProductFilters />
-            </aside>
 
-    {/* Products */}
-    <section>
-        <div className="mb-6">
-    <h1 className="text-2xl font-bold">
-        Products
-        </h1>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {result.products.map((product) => (
+                    <article key={product.id}>
+                        <h2>{product.title}</h2>
 
-    {search && (
-        <p className="mt-2 text-gray-600">
-            Search results for &#34;{search}&#34;
-                               </p>
-    )}
-    </div>
+                        <p>
+                            ${product.price.toFixed(2)}
+                        </p>
+                    </article>
+                ))}
+            </div>
 
-    {products.length === 0 ? (
-        <div className="py-20 text-center">
-        <p className="text-gray-500">
-            No products found.
-    </p>
-    </div>
-    ) : (
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-                    <article
-                        key={product.id}
-                className="border border-gray-200 p-5"
-                >
-                <h2 className="font-semibold">
-                    {product.title}
-                    </h2>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                    {product.category}
-                    </p>
-
-                    <p className="mt-4 font-medium">
-                        ${product.price.toFixed(2)}
-        </p>
-        </article>
-    ))}
-        </div>
-    )}
-    </section>
-
-    </div>
-    </main>
-);
+            <Pagination
+                currentPage={result.page}
+                totalPages={result.totalPages}
+            />
+        </main>
+    );
 }
